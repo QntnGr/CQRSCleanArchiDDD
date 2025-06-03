@@ -3,7 +3,7 @@ using Domain.Entities;
 
 namespace Application.Common.Interfaces.Persistance;
 
-public interface IUserRepository
+public interface IUserRepository: IRepository<User>
 {
-    public void Add(User user);
+    //TODO: Write here custom methods that are required for specific requirement
 }
