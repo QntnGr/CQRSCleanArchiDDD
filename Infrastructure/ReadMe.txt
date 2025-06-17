@@ -1,7 +1,8 @@
 ﻿Implementations:
  .Repositories
  .services externes
- .EF Core 
+ .EF Core code first
+ .
 
  Migrations et configurations avec EF core 6:
 	-dotnet ef --project NomDuProjet migrations add InitialCreate				(pour l'initialisation)

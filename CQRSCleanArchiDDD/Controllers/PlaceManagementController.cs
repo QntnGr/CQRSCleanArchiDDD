@@ -2,6 +2,7 @@ using Application.Common.Interfaces.Persistance;
 using Domain.Entities;
 using Infrastructure.Persistence.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace CQRSCleanArchiDDD.Controllers
 {
@@ -12,19 +13,20 @@ namespace CQRSCleanArchiDDD.Controllers
         private readonly IPlaceRepository _placeRepository = placeRepository;
         private readonly ILogger<PlaceManagementController> _logger = logger;
 
-        [HttpGet(Name = "GetPlaces")]
-        public IEnumerable<Place> GetAllPlaces()
+        [HttpGet("/GetAll")]
+        public async Task<IActionResult> GetAllPlaces()
         {
             _logger.LogInformation("Getting all Places");
-            return _placeRepository.GetAll().ToArray();
+            var result = await _placeRepository.GetAllAsync();
+            return Ok(result);
         }
 
-        [HttpPost(Name = "AddPlace")]
-        public bool Add(Place place)
+        [HttpPost("/AddOne")]
+        public async Task<IActionResult> Add(Place place)
         {
             _logger.LogInformation("New place will be added for placeId: {0}", place.PlaceId);
-            _placeRepository.Add(place);
-            return true;
+            await _placeRepository.AddAsync(place);
+            return Ok();
         }
     }
 }
