@@ -12,15 +12,11 @@ namespace CQRSCleanArchiDDD.Controllers
         private readonly IPlaceRepository _placeRepository = placeRepository;
         private readonly ILogger<PlaceManagementController> _logger = logger;
 
-        [HttpGet(Name = "GetWeatherForecast")]
-        public IEnumerable<WeatherForecast> Get()
+        [HttpGet(Name = "GetPlaces")]
+        public IEnumerable<Place> GetAllPlaces()
         {
-            return Enumerable.Range(1, 5).Select(index => new WeatherForecast
-            {
-                Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                TemperatureC = Random.Shared.Next(-20, 55),
-            })
-            .ToArray();
+            _logger.LogInformation("Getting all Places");
+            return _placeRepository.GetAll().ToArray();
         }
 
         [HttpPost(Name = "AddPlace")]
