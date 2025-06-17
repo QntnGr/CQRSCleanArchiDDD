@@ -8,7 +8,8 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddPersistence();
+
+builder.Services.AddPersistence(builder.Configuration.GetConnectionString("DefaultConnection") ?? string.Empty);
 
 var app = builder.Build();
 
@@ -17,6 +18,7 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    Console.WriteLine("Base SQLite à : " + Path.GetFullPath("places.db"));
 }
 
 app.UseHttpsRedirection();

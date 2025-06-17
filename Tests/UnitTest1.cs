@@ -1,3 +1,5 @@
+using System.Text;
+
 namespace Tests
 {
     public class UnitTest1

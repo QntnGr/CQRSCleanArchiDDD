@@ -4,4 +4,6 @@
  .EF Core 
 
  Migrations et configurations avec EF core 6:
-	-Add-Migration InitialCreate
+	-dotnet ef --project NomDuProjet migrations add InitialCreate				(pour l'initialisation)
+	-dotnet ef --project NomDuProjet migrations add NomMigration				(pour ajouter une migration)
+	-dotnet ef --project NomDuProjet database update							(pour update la DB)
