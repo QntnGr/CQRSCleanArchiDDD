@@ -1,31 +1,32 @@
-using Application.Common.Interfaces.Persistance;
-using Domain.Entities;
-using Infrastructure.Persistence.Repositories;
+using Application.Common.Interfaces.Services;
+using Application.Dto;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
 
 namespace CQRSCleanArchiDDD.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class PlaceManagementController(ILogger<PlaceManagementController> logger, IPlaceRepository placeRepository) : ControllerBase
+    public class PlaceManagementController(
+        ILogger<PlaceManagementController> logger,
+        IPlaceService placeService) 
+        : ControllerBase
     {
-        private readonly IPlaceRepository _placeRepository = placeRepository;
+        private readonly IPlaceService _placeService = placeService;
         private readonly ILogger<PlaceManagementController> _logger = logger;
 
         [HttpGet("/GetAll")]
         public async Task<IActionResult> GetAllPlaces()
         {
             _logger.LogInformation("Getting all Places");
-            var result = await _placeRepository.GetAllAsync();
+            var result = await _placeService.GetAllPlacesAsync();
             return Ok(result);
         }
 
         [HttpPost("/AddOne")]
-        public async Task<IActionResult> Add(Place place)
+        public async Task<IActionResult> Add(PlaceDto place)
         {
             _logger.LogInformation("New place will be added for placeId: {0}", place.PlaceId);
-            await _placeRepository.AddAsync(place);
+            await _placeService.AddOnePlaceAsync(place);
             return Ok();
         }
     }
