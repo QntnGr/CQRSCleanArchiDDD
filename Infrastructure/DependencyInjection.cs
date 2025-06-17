@@ -13,7 +13,7 @@ public static class DependencyInjection
     {
         if (string.IsNullOrWhiteSpace(connectionString))
         {
-            return services;
+            throw new ArgumentException("La chaîne de connexion ne peut pas être vide ou nulle.", nameof(connectionString));
         }
 
         services.AddDbContext<PlaceDbContext>(options =>
@@ -21,7 +21,7 @@ public static class DependencyInjection
 
         services.AddScoped<IPlaceRepository, PlaceRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
-        services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IReviewRepository, ReviewRepository>();
 
         return services;
     }
