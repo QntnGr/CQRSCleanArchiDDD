@@ -8,6 +8,6 @@
 ## TO DO
 
 - [ ] Ajouter des agrégats et des gestionnaires afin de faire du DDD et du CQRS (non nécessaire)
-- [ ] Ajouter un ORM pour consommer Google Place API
+- [ ] Ajouter fluentUrl avec couche POCO pour consommer Google Place API
 - [ ] Stocker les données de Google Place API
 - [ ] Ajouter une authentification + sécurité (JWT)
