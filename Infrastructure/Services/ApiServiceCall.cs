@@ -1,6 +1,6 @@
 ﻿using Flurl.Http;
 
-namespace Application.Services;
+namespace Infrastructure.Services;
 
 public class ApiServiceCall<T> where T : class, new()
 {
