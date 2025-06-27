@@ -1,5 +1,7 @@
 using Application;
 using Infrastructure;
+using Infrastructure.Configurations;
+using Microsoft.Extensions.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,7 +12,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddServices();
-
+builder.Services.Configure<ApiSettings>(builder.Configuration.GetSection("GooglePlaceApi"));
 builder.Services.AddPersistence(builder.Configuration.GetConnectionString("DefaultConnection") ?? string.Empty);
 
 var app = builder.Build();

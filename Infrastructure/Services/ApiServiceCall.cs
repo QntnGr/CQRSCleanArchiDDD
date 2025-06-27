@@ -1,34 +1,29 @@
 ﻿using Application.Common.Interfaces.Services;
 using Flurl;
 using Flurl.Http;
+using Infrastructure.Configurations;
+using Microsoft.Extensions.Options;
 
 namespace Infrastructure.Services;
 
-public class ApiServiceCall<T> : IApiServiceCall<T> where T : class, new()
+public class ApiServiceCall<T> : IApiServiceCall<T> where T : class
 {
-    private readonly string _apiBaseUrl;
-    private readonly string _apiKey;
+    private readonly Url _url;
 
-    public ApiServiceCall(string apiBaseUrl, string apiKey)
+    public ApiServiceCall(IOptions<ApiSettings> options)
     {
-        _apiBaseUrl = apiBaseUrl;
-        _apiKey = apiKey;
+        _url = options.Value.BaseUrl;
+        _url.SetQueryParam("key", options.Value.ApiKey);
+    }
+
+    public void AddQueryParameter(string parameterName, string value)
+    {
+        _url.SetQueryParam(parameterName, value);
     }
 
     public async Task<T> GetAsync(string id)
     {
-        return await GetUri(id).GetJsonAsync<T>();
-    }
-
-    private string GetUri(string id)
-    {
-        return _apiBaseUrl
-        .AppendPathSegment(id)
-        .SetQueryParams(new
-        {
-            api_key = _apiKey,
-            max_results = 20,
-        })
-        .SetFragment("after-hash");
+        var debug = await _url.GetStringAsync();
+        return await _url.GetJsonAsync<T>();
     }
 }
