@@ -13,7 +13,11 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddServices();
 builder.Services.Configure<ApiSettings>(builder.Configuration.GetSection("GooglePlaceApi"));
-builder.Services.AddPersistence(builder.Configuration.GetConnectionString("DefaultConnection") ?? string.Empty);
+builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
+var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>();
+builder.Services.AddInfrastructure(
+    builder.Configuration.GetConnectionString("DefaultConnection") ?? string.Empty,
+    jwtSettings!);
 
 var app = builder.Build();
 
