@@ -2,19 +2,21 @@
 using Flurl;
 using Flurl.Http;
 using Infrastructure.Configurations;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System.Text.Json;
 
 namespace Infrastructure.Services;
 
 public class ApiServiceCall<T> : IApiServiceCall<T> where T : class
 {
     private readonly Url _url;
+    private readonly ILogger<ApiServiceCall<T>> _logger;
 
-    public ApiServiceCall(IOptions<ApiSettings> options)
+    public ApiServiceCall(IOptions<ApiSettings> options, ILogger<ApiServiceCall<T>> logger)
     {
         _url = options.Value.BaseUrl;
         _url.SetQueryParam("key", options.Value.ApiKey);
+        _logger = logger;
     }
 
     public void AddQueryParameter(string parameterName, string value)
@@ -22,8 +24,16 @@ public class ApiServiceCall<T> : IApiServiceCall<T> where T : class
         _url.SetQueryParam(parameterName, value);
     }
 
-    public async Task<T> GetAsync(string id)
+    public async Task<T> GetAsync()
     {
-        return await _url.GetJsonAsync<T>();
+        try
+        {
+            return await _url.GetJsonAsync<T>();
+        }
+        catch (FlurlHttpException ex)
+        {
+            _logger.LogError("Error returned from {0}: {1}", ex.Call.Request.Url, ex.Message);
+            return await ex.GetResponseJsonAsync<T>();
+        }
     }
 }

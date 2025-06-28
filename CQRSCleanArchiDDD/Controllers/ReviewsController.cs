@@ -1,5 +1,6 @@
 ﻿using Application.Common.Interfaces.Services;
 using Application.Dto;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CQRSCleanArchiDDD.Controllers
@@ -35,6 +36,9 @@ namespace CQRSCleanArchiDDD.Controllers
         {
             _logger.LogInformation("Insert one review by place");
             var result = await _reviewService.SyncronizeReviewFromGoogleApiById(placeId);
+            if (!result.Any()) {
+                return NoContent();
+            }
             return Ok(result);
         }
     }

@@ -36,7 +36,11 @@ public class ReviewService : IReviewService
     public async Task<List<ReviewDto>> SyncronizeReviewFromGoogleApiById(string placeId)
     {
         _apiServiceCall.AddQueryParameter("place_id", placeId);
-        var reviewsModel = await _apiServiceCall.GetAsync(placeId);
+        var reviewsModel = await _apiServiceCall.GetAsync();
+        if (reviewsModel.result == null)
+        {
+            return new();
+        }
 
         var reviews = reviewsModel.result.reviews.Select(review => review.ToEntity());
         var place = await _placeRepository.FindOneAsync(p => p.PlaceId == placeId);
