@@ -7,16 +7,28 @@ namespace Application.Dto;
 public class ReviewDto
 {
     [JsonIgnore]
-    public Guid Id { get; set; } = new Guid();
+    public Guid Id { get; set; } = Guid.NewGuid();
     public string AuthorName { get; set; } = null!;
     public string Language { get; set; } = null!;
     public string ProfilePhotoUrl { get; set; } = null!;
     public int Rating { get; set; }
     public string RelativeTimeDescription { get; set; } = null!;
     public string Text { get; set; } = null!;
-    public DateTimeOffset Date { get; set; }
+    public long time { get; set; }
+    public DateTimeOffset Date
+    {
+        get
+        {
+            if (!date.HasValue)
+            {
+                date = DateTimeOffset.FromUnixTimeSeconds(time);
+            }
+            return date.Value;
+        }
+    }
     public bool IsTranslated { get; set; }
 
+    private DateTimeOffset? date;
     public Review ToEntity()
     {
         return new Review()
@@ -36,10 +48,10 @@ public class ReviewDto
 
 public class ReviewsModel
 {
-    public ResultReviews result {  get; set; }
+    public ResultReviews result { get; set; }
 }
 
 public class ResultReviews
 {
-    public IEnumerable<Review> reviews { get; set; }
+    public IEnumerable<ReviewDto> reviews { get; set; }
 }
