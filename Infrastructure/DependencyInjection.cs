@@ -26,7 +26,8 @@ public static class DependencyInjection
         services.AddScoped<IReviewRepository, ReviewRepository>();
 
         services.AddTransient(typeof(IApiServiceCall<>), typeof(ApiServiceCall<>));
-        
+        services.AddTransient<IUserService, UserService>();
+
         return services;
     }
 }

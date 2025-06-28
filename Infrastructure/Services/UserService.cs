@@ -15,6 +15,12 @@ public class UserService : IUserService
         _userRepository = userRepository;
     }
 
+    /// <summary>
+    /// identify user and return it
+    /// </summary>
+    /// <param name="username"></param>
+    /// <param name="password"></param>
+    /// <returns></returns>
     public async Task<User> AuthenticateUser(string username, string password)
     {
         var user = await _userRepository.FindOneAsync(user => user.Name == username);
