@@ -24,11 +24,6 @@ public class ApiServiceCall<T> : IApiServiceCall<T> where T : class
 
     public async Task<T> GetAsync(string id)
     {
-        var json = await _url.GetStringAsync();
-        return JsonSerializer.Deserialize<T>(json,
-            new JsonSerializerOptions
-            {
-                PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower
-            });
+        return await _url.GetJsonAsync<T>();
     }
 }
