@@ -1,7 +1,9 @@
 ﻿
 using Application.Common.Interfaces.Persistance;
+using Application.Common.Interfaces.Services;
 using Infrastructure.Persistence;
 using Infrastructure.Persistence.Repositories;
+using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -23,6 +25,8 @@ public static class DependencyInjection
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IReviewRepository, ReviewRepository>();
 
+        services.AddTransient(typeof(IApiServiceCall<>), typeof(ApiServiceCall<>));
+        
         return services;
     }
 }
