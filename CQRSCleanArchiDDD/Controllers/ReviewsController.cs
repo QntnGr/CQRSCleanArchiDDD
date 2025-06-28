@@ -1,4 +1,5 @@
 ﻿using Application.Common.Interfaces.Services;
+using Application.Dto;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CQRSCleanArchiDDD.Controllers
@@ -13,11 +14,27 @@ namespace CQRSCleanArchiDDD.Controllers
         private readonly IReviewService _reviewService = reviewService;
 
 
-        [HttpGet("/GetById/{placeId}")]
-        public async Task<IActionResult> GetAllPlaces(string placeId)
+        [HttpGet("/GetAllByPlace/{placeId}")]
+        public async Task<IActionResult> GetAllReviewsByPlace(string placeId)
         {
-            _logger.LogInformation("Getting last 5 reviews by place Id from google place API");
-            var result = await _reviewService.GetReviewsById(placeId);
+            _logger.LogInformation("Getting all reviews by place");
+            var result = await _reviewService.GetReviewsByIdAsync(placeId);
+            return Ok(result);
+        }
+
+        [HttpPost("/InsertOneByPlace/{placeId}")]
+        public async Task<IActionResult> InsertReview(ReviewDto review, string placeId)
+        {
+            _logger.LogInformation("Insert one review by place");
+            var result = await _reviewService.AddReview(review, placeId);
+            return Ok(result);
+        }
+
+        [HttpPut("/SyncronyzeReviews/{placeId}")]
+        public async Task<IActionResult> SyncronyzeReviews(string placeId)
+        {
+            _logger.LogInformation("Insert one review by place");
+            var result = await _reviewService.SyncronizeReviewFromGoogleApiById(placeId);
             return Ok(result);
         }
     }

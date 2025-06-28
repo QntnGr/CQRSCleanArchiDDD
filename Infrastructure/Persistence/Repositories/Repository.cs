@@ -18,6 +18,13 @@ public class Repository<TEntity> : IRepository<TEntity> where TEntity : class
         _placeDbContext.Set<TEntity>().Add(entity);
         await _placeDbContext.SaveChangesAsync();
     }
+
+    public async Task AddManyAsync(IEnumerable<TEntity> entities)
+    {
+        await _placeDbContext.Set<TEntity>().AddRangeAsync(entities);
+        await _placeDbContext.SaveChangesAsync();
+    }
+
     public async Task DeleteAsync(TEntity entity)
     {
         _placeDbContext.Set<TEntity>().Remove(entity);
@@ -67,4 +74,5 @@ public class Repository<TEntity> : IRepository<TEntity> where TEntity : class
         }
         return entity;
     }
+
 }

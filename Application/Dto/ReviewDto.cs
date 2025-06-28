@@ -8,12 +8,12 @@ public class ReviewDto
 {
     [JsonIgnore]
     public Guid Id { get; set; } = Guid.NewGuid();
-    public string AuthorName { get; set; } = null!;
-    public string Language { get; set; } = null!;
-    public string ProfilePhotoUrl { get; set; } = null!;
-    public int Rating { get; set; }
-    public string RelativeTimeDescription { get; set; } = null!;
-    public string Text { get; set; } = null!;
+    public string author_name { get; set; } = null!;
+    public string language { get; set; } = null!;
+    public string profile_photo_url { get; set; } = null!;
+    public int rating { get; set; }
+    public string relative_time_description { get; set; } = null!;
+    public string text { get; set; } = null!;
     public long time { get; set; }
     public DateTimeOffset Date
     {
@@ -26,22 +26,39 @@ public class ReviewDto
             return date.Value;
         }
     }
-    public bool IsTranslated { get; set; }
+    public bool translated { get; set; }
 
     private DateTimeOffset? date;
+
     public Review ToEntity()
     {
         return new Review()
         {
-            AuthorName = AuthorName,
-            Language = Language,
-            ProfilePhotoUrl = ProfilePhotoUrl,
-            Rating = Rating,
+            AuthorName = author_name,
+            Language = language,
+            ProfilePhotoUrl = profile_photo_url,
+            Rating = rating,
             Date = Date,
-            IsTranslated = IsTranslated,
+            IsTranslated = translated,
             Id = Id,
-            RelativeTimeDescription = RelativeTimeDescription,
-            Text = Text
+            RelativeTimeDescription = relative_time_description,
+            Text = text
+        };
+    }
+
+    public static ReviewDto FromEntity(Review review)
+    {
+        return new ReviewDto()
+        {
+            Id = review.Id,
+            author_name = review.AuthorName,
+            language = review.Language,
+            date = review.Date,
+            translated = review.IsTranslated,
+            profile_photo_url = review.ProfilePhotoUrl,
+            rating = review.Rating,
+            relative_time_description = review.RelativeTimeDescription,
+            text = review.Text
         };
     }
 }

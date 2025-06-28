@@ -13,4 +13,6 @@ public class Review
     public DateTimeOffset Date { get; set; }
     public bool IsTranslated {  get; set; }
 
+    public Guid? PlaceId { get; set; }
+    public Place? Place { get; set; }
 }
