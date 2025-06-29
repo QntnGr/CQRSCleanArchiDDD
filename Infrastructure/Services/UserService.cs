@@ -1,5 +1,4 @@
 ﻿
-
 using Application.Common.Interfaces.Persistance;
 using Application.Common.Interfaces.Services;
 using Domain.Entities;
@@ -33,9 +32,13 @@ public class UserService : IUserService
         return user;
     }
 
-    private bool VerifyPassword(string inputPassword, string storedPassword)
+    public string HashPassword(string password)
     {
-        // logique de vérification du mot de passe, BCrypt ou autre algorithme de hachage
-        return inputPassword == storedPassword;
+        return BCrypt.Net.BCrypt.HashPassword(password);
+    }
+
+    private bool VerifyPassword(string inputPassword, string storedHashedPassword)
+    {
+        return BCrypt.Net.BCrypt.Verify(inputPassword, storedHashedPassword);
     }
 }
