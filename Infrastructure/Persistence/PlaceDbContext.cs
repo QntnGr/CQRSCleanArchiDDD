@@ -13,4 +13,12 @@ public class PlaceDbContext : DbContext
         : base(options)
     {
     }
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<User>(entity =>
+        {
+            entity.Property(e => e.Id)
+                  .HasDefaultValueSql("NEWSEQUENTIALID()");
+        });
+    }
 }
