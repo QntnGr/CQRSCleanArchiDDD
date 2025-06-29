@@ -1,11 +1,13 @@
 using Application.Common.Interfaces.Services;
 using Application.Dto;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CQRSCleanArchiDDD.Controllers;
 
 [ApiController]
 [Route("[controller]")]
+[Authorize]
 public class PlaceManagementController(
     ILogger<PlaceManagementController> logger,
     IPlaceService placeService) 

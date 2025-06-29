@@ -1,12 +1,14 @@
 ﻿using Application.Common.Interfaces.Services;
 using Application.Dto;
 using Domain.Errors;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CQRSCleanArchiDDD.Controllers;
 
 [Route("[controller]")]
 [ApiController]
+[Authorize]
 public class ReviewsController(ILogger<ReviewsController> logger,
     IReviewService reviewService) 
     : ControllerBase
