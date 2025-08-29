@@ -13,7 +13,7 @@ public class ScraperService : IScraperService
         _logger = logger;
     }
 
-    public async Task<string> GetHtmlAsync(string endPoint)
+    public async Task<string> GetHtmlAsync(string search)
     {
         string html = string.Empty;
         _logger.LogInformation("chargement de la place google reviews avec Playwright");
@@ -24,7 +24,6 @@ public class ScraperService : IScraperService
         });
 
         var page = await browser.NewPageAsync();
-        //endPoint : Estelle+Priou+-+Avocate/@44.8343079,-0.5797895,17z/data=!3m1!4b1!4m14!1m7!3m6!1s0x854cacc7b3e691ad:0x24cfc866716803ce!2sEstelle+Priou+-+Avocate!8m2!3d44.8343079!4d-0.5772146!16s%2Fg%2F11y53w4j4g!3m5!1s0x854cacc7b3e691ad:0x24cfc866716803ce!8m2!3d44.8343079!4d-0.5772146!16s%2Fg%2F11y53w4j4g?entry=ttu&g_ep=EgoyMDI1MDgyNS4wIKXMDSoASAFQAw%3D%3D
         // Remplace par l'URL Google Maps du lieu
         await page.GotoAsync($"https://www.google.com/maps");
 
@@ -42,19 +41,39 @@ public class ScraperService : IScraperService
             await page.WaitForSelectorAsync("input#searchboxinput");
 
             //entrer la recherche
-            await page.FillAsync("input#searchboxinput", endPoint);
+            await page.FillAsync("input#searchboxinput", search);
             await page.Keyboard.PressAsync("Enter");
             await page.WaitForTimeoutAsync(3000); // attendre le chargement
 
             // Cliquer pour ouvrir les avis
             await page.Locator("button[aria-label^=\"Plus d\\'avis\"]").ClickAsync();
-            await page.WaitForTimeoutAsync(2000);
+            await page.WaitForTimeoutAsync(3000);
+
+            var boutonsPlus = page.Locator("button[aria-label^=\"Voir plus\"]");
+            int countMore = await boutonsPlus.CountAsync();
+            for (int i = 0; i < countMore; i++)
+            {
+                try
+                {
+                    var btn = boutonsPlus.Nth(0); // Toujours prendre le premier bouton
+                    await btn.ScrollIntoViewIfNeededAsync();
+                    await btn.WaitForAsync(new LocatorWaitForOptions { State = WaitForSelectorState.Visible, Timeout = 5000 });
+                    await btn.ClickAsync();
+                    await page.WaitForTimeoutAsync(1000); // Attendre après le clic
+                    boutonsPlus = page.Locator("button[aria-label^=\"Voir plus\"]"); // Rafraîchir la liste
+                    countMore = await boutonsPlus.CountAsync(); // Mettre à jour le compte
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogWarning($"Erreur sur le bouton {i}: {ex.Message}");
+                }
+            }
 
             // Récupérer le HTML contenant les avis
             var reviewDivs = page.Locator("div[data-review-id]");
-            int count = await reviewDivs.CountAsync();
+            int countReviews = await reviewDivs.CountAsync();
 
-            for (int i = 0; i < count; i++)
+            for (int i = 0; i < countReviews; i++)
             {
                 html += await reviewDivs.Nth(i).InnerHTMLAsync();
             }
@@ -63,8 +82,9 @@ public class ScraperService : IScraperService
 
             return html;
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
+            await browser.CloseAsync();
             return ex.Message;
         }
     }
