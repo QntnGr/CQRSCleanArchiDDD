@@ -9,7 +9,7 @@ namespace CQRSCleanArchiDDD.Controllers;
 [Route("[controller]")]
 [ApiController]
 [Authorize]
-[AllowAnonymous] //debug
+//[AllowAnonymous] //debug
 public class ReviewsController(ILogger<ReviewsController> logger,
     IReviewService reviewService,
     IScraperService scraperService,
@@ -48,18 +48,5 @@ public class ReviewsController(ILogger<ReviewsController> logger,
             return NotFound(error);
         }
         return Ok(result);
-    }
-
-    [HttpPut("/GetHtml/{endPoint}")]
-    public async Task<IActionResult> GetHtml(string endPoint)
-    {
-        _logger.LogInformation("Insert one review by place");
-        var html = await _scraperService.GetHtmlAsync(endPoint);
-        if (!html.Any()) {
-            var error = DomainError.NotFound("No reviews found for the specified endPoint.");
-            return NotFound(error);
-        }
-        var reviews = _googleReviewParser.ParseReviews(html);
-        return Ok(reviews);
     }
 }

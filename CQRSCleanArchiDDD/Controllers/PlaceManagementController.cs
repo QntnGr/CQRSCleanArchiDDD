@@ -8,7 +8,7 @@ namespace CQRSCleanArchiDDD.Controllers;
 [ApiController]
 [Route("[controller]")]
 [Authorize]
-[AllowAnonymous] //debug
+//[AllowAnonymous] //debug
 public class PlaceManagementController(
     ILogger<PlaceManagementController> logger,
     IPlaceService placeService) 
