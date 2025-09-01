@@ -5,13 +5,9 @@ using Microsoft.Playwright;
 
 namespace Infrastructure.Services;
 
-public class ScraperService : IScraperService
+public class ScraperService(ILogger<IScraperService> logger) : IScraperService
 {
-    private readonly ILogger<IScraperService> _logger;
-    public ScraperService(ILogger<IScraperService> logger)
-    {
-        _logger = logger;
-    }
+    private readonly ILogger<IScraperService> _logger = logger;
 
     public async Task<string> GetHtmlAsync(string search)
     {

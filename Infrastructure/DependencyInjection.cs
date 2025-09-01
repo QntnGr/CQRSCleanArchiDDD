@@ -56,6 +56,7 @@ public static class DependencyInjection
         services.AddTransient(typeof(IApiServiceCall<>), typeof(ApiServiceCall<>));
         services.AddTransient<IUserService, UserService>();
         services.AddTransient<IScraperService, ScraperService>();
+        services.AddTransient<IGoogleReviewParser, GoogleReviewParser>();
 
         return services;
     }

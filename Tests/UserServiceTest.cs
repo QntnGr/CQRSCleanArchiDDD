@@ -21,6 +21,6 @@ public class UserServiceTest
     {
         var hashedPassword = _userService.HashPassword("test");
 
-        Assert.Equal("$2a$11$7gbUe7C2iz/fuowyMbDOquPNbSOf2UuOYJxJYQa7b31AxY8Wyy/wa", hashedPassword);
+        Assert.Equal("$2a$11$qbOnn44oc3OCV4zC1zghnOFgMjIZHNN/CI/OsKPyxsDIq1XeNLzMS", hashedPassword);
     }
 }

@@ -9,14 +9,17 @@ namespace CQRSCleanArchiDDD.Controllers;
 [Route("[controller]")]
 [ApiController]
 [Authorize]
+[AllowAnonymous] //debug
 public class ReviewsController(ILogger<ReviewsController> logger,
     IReviewService reviewService,
-    IScraperService scraperService) 
+    IScraperService scraperService,
+    IGoogleReviewParser googleReviewParser) 
     : ControllerBase
 {
     private readonly ILogger<ReviewsController> _logger = logger;
     private readonly IReviewService _reviewService = reviewService;
     private readonly IScraperService _scraperService = scraperService;
+    private readonly IGoogleReviewParser _googleReviewParser = googleReviewParser;
 
 
     [HttpGet("/GetAllByPlace/{placeId}")]
@@ -38,25 +41,25 @@ public class ReviewsController(ILogger<ReviewsController> logger,
     [HttpPut("/SyncronyzeReviews/{placeId}")]
     public async Task<IActionResult> SyncronyzeReviews(string placeId)
     {
-        _logger.LogInformation("Insert one review by place");
-        var result = await _reviewService.SyncronizeReviewFromGoogleApiById(placeId);
+        _logger.LogInformation("Synchronize reviews by placeId and search string");
+        var result = await _reviewService.SyncronizeReviewWithScrapperAsync(placeId);
         if (!result.Any()) {
-            var error = DomainError.NotFound("No reviews found for the specified place ID.");
+            var error = DomainError.NotFound("No reviews found to synchronize");
             return NotFound(error);
         }
         return Ok(result);
     }
 
-    [AllowAnonymous]
     [HttpPut("/GetHtml/{endPoint}")]
     public async Task<IActionResult> GetHtml(string endPoint)
     {
         _logger.LogInformation("Insert one review by place");
-        var result = await _scraperService.GetHtmlAsync(endPoint);
-        if (!result.Any()) {
+        var html = await _scraperService.GetHtmlAsync(endPoint);
+        if (!html.Any()) {
             var error = DomainError.NotFound("No reviews found for the specified endPoint.");
             return NotFound(error);
         }
-        return Ok(result);
+        var reviews = _googleReviewParser.ParseReviews(html);
+        return Ok(reviews);
     }
 }

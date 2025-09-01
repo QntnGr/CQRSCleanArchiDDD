@@ -10,23 +10,36 @@ public class ReviewService : IReviewService
     private readonly IApiServiceCall<ReviewsModel> _apiServiceCall;
     private readonly IPlaceRepository _placeRepository;
     private readonly IReviewRepository _reviewRepository;
+    private readonly IScraperService _scraperService;
+    private readonly IGoogleReviewParser _googleReviewParser;
 
     public ReviewService(IApiServiceCall<ReviewsModel> apiServiceCall,
         IPlaceRepository placeRepository,
-        IReviewRepository reviewRepository)
+        IReviewRepository reviewRepository,
+        IScraperService scraperService,
+        IGoogleReviewParser googleReviewParser)
     {
         _apiServiceCall = apiServiceCall;
         _apiServiceCall.AddQueryParameter("fields", "reviews");
         _apiServiceCall.AddQueryParameter("language", "fr");
         _placeRepository = placeRepository;
         _reviewRepository = reviewRepository;
+        _scraperService = scraperService;
+        _googleReviewParser = googleReviewParser;
     }
 
-    //public async Task<ReviewsModel> GetReviewsById(string placeId)
-    //{
-    //    _apiServiceCall.AddQueryParameter("place_id", placeId);
-    //    return await _apiServiceCall.GetAsync(placeId);
-    //}
+    #region private
+    private static IEnumerable<Review> AssignAndComparePlaceIdToReviews(Place place, IEnumerable<Review> reviews, List<Review> reviewsOld)
+    {
+        var filtered = reviews.Where(review => !reviewsOld.Select(ro => ro.Date).Contains(review.Date)).ToList();
+        foreach (var review in filtered)
+        {
+            review.Place = place;
+        }
+        return filtered;
+    }
+    #endregion
+
     /// <summary>
     /// insert missing reviews linked to place and return all reviews from place
     /// </summary>
@@ -64,7 +77,7 @@ public class ReviewService : IReviewService
             throw new Exception("Place not found");
         }
         var reviews = await _reviewRepository.GetAllReviewByPlaceAsync(place.Id);
-        return reviews.Select(review => ReviewDto.FromEntity(review)).ToList();
+        return reviews.Select(ReviewDto.FromEntity).ToList();
     }
 
     public async Task<List<ReviewDto>> AddReview(ReviewDto reviewDto, string placeId)
@@ -81,15 +94,23 @@ public class ReviewService : IReviewService
         return await GetReviewsByIdAsync(placeId);
     }
 
-    #region private
-    private static IEnumerable<Review> AssignAndComparePlaceIdToReviews(Place place, IEnumerable<Review> reviews, List<Review> reviewsOld)
+    public async Task<List<ReviewDto>> SyncronizeReviewWithScrapperAsync(string placeId)
     {
-        var filtered = reviews.Where(review => !reviewsOld.Select(ro => ro.Date).Contains(review.Date)).ToList();
-        foreach (var review in filtered)
+        var place = await _placeRepository.FindOneAsync(p => p.PlaceId == placeId);
+        if (place == null)
         {
-            review.Place = place;
+            throw new Exception("Place not found");
         }
-        return filtered;
+        var reviewsHtml = await _scraperService.GetHtmlAsync(place.Name);
+        var reviews = _googleReviewParser.ParseReviews(reviewsHtml);
+
+        var reviewsDb = await _reviewRepository.GetAllReviewByPlaceAsync(place.Id);
+
+        var reviewsToInsert = AssignAndComparePlaceIdToReviews(place, reviews, reviewsDb);
+
+        if(reviewsToInsert.Any())
+            await _reviewRepository.AddManyAsync(reviewsToInsert);
+
+        return await GetReviewsByIdAsync(placeId);
     }
-    #endregion
 }
