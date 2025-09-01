@@ -31,7 +31,8 @@ public class GoogleReviewParserServiceTest
         Assert.All(reviews, review =>
         {
             Assert.True(review.Rating != 0);
-            Assert.False(string.IsNullOrEmpty(review.AuthorName));
+            Assert.True(!string.IsNullOrEmpty(review.AuthorName));
+            Assert.True(review.Date != DateTimeOffset.MinValue);
         });
     }
 }
