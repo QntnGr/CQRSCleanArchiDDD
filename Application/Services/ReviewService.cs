@@ -29,7 +29,7 @@ public class ReviewService : IReviewService
     }
 
     #region private
-    private static IEnumerable<Review> AssignAndComparePlaceIdToReviews(Place place, IEnumerable<Review> reviews, List<Review> reviewsOld)
+    public IEnumerable<Review> AssignAndComparePlaceIdToReviews(Place place, IEnumerable<Review> reviews, List<Review> reviewsOld)
     {
         var filtered = reviews.Where(review => !reviewsOld.Select(ro => ro.AuthorName).Contains(review.AuthorName)).ToList();
         foreach (var review in filtered)

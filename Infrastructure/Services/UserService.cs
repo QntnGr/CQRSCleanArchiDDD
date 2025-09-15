@@ -37,7 +37,7 @@ public class UserService : IUserService
         return BCrypt.Net.BCrypt.HashPassword(password);
     }
 
-    private bool VerifyPassword(string inputPassword, string storedHashedPassword)
+    public bool VerifyPassword(string inputPassword, string storedHashedPassword)
     {
         return BCrypt.Net.BCrypt.Verify(inputPassword, storedHashedPassword);
     }

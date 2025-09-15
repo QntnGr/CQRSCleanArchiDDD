@@ -7,4 +7,5 @@ public interface IUserService
 {
     string HashPassword(string password);
     Task<User> AuthenticateUser(string username, string password);
+    bool VerifyPassword(string inputPassword, string storedHashedPassword);
 }

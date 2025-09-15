@@ -19,8 +19,11 @@ public class UserServiceTest
     [Fact]
     public void TestHashPawwsord()
     {
-        var hashedPassword = _userService.HashPassword("test");
+        var inputPwd = "test";
+        var hashedPassword = _userService.HashPassword(inputPwd);
 
-        Assert.Equal("$2a$11$qbOnn44oc3OCV4zC1zghnOFgMjIZHNN/CI/OsKPyxsDIq1XeNLzMS", hashedPassword);
+        var isOk = _userService.VerifyPassword(inputPwd, hashedPassword);
+
+        Assert.True(isOk);
     }
 }
